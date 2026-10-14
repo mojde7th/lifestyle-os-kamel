@@ -21,6 +21,7 @@ button,select{font:600 14px Vazirmatn,sans-serif;background:#0d1117;color:#eef4f
 .pill.warn{border-color:#f0c14b;color:#f0c14b}
 .note{color:#9bb0c3;font-size:.88rem;margin-top:20px}
 code{direction:ltr;display:inline-block}
+#wk-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#14352e;color:#86e0a3;border:1px solid #86e0a3;padding:10px 18px;border-radius:12px;z-index:80;font:600 15px Vazirmatn,sans-serif;display:none}
 </style>
 </head>
 <body>
@@ -42,12 +43,12 @@ code{direction:ltr;display:inline-block}
 <script>
 const GUIDES = [
   {
-    id: "personal-os-kamel-v1",
+    id: "personal-os-kamel-v2",
     title: "کارگاه کامل — بازترکیب و سبک زندگی",
     href: "workshop-personal-os.html",
-    pages: 49,
+    pages: 162,
     updated: "2026-10-14",
-    blurb: "ادغام راهنمای قدیم + سطح هزار + عکس کارگاه + چک‌لیست هفتگی"
+    blurb: "بازترکیب چهار به چهار، روتین، خرید، آرایش لافار، فانکشنال، واکسن؛ عکس‌ها قابل دانلود"
   }
 ];
 function readState(key) {
@@ -89,7 +90,26 @@ document.getElementById("btnExport").onclick = () => {
   a.download = "personal-os-kamel-status.txt";
   a.click();
 };
+function toast(msg) {
+  let el = document.getElementById("wk-toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "wk-toast";
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = "block";
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = "none"; }, 2400);
+}
 paint();
+(function () {
+  const g = GUIDES[0];
+  const st = readState(g.id);
+  if (st.done === 0) toast("این کارگاه هنوز نخوانده است");
+  else if (st.done < g.pages) toast("خوانده " + st.done + " از " + g.pages);
+  else toast("کارگاه تمام شده");
+})();
 </script>
 </body>
 </html>

@@ -22,6 +22,28 @@ window.WorkshopReadkit = function (cfg) {
     } catch (e) {}
   }
 
+  function faNum(n) {
+    return String(n).replace(/[0-9]/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+  }
+
+  function toast(msg) {
+    let el = document.getElementById("wk-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "wk-toast";
+      el.setAttribute("role", "status");
+      el.style.cssText =
+        "position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#14352e;color:#86e0a3;border:1px solid #86e0a3;padding:10px 18px;border-radius:12px;z-index:80;font:600 15px Tahoma,sans-serif;display:none;max-width:90%";
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.style.display = "block";
+    clearTimeout(el._t);
+    el._t = setTimeout(() => {
+      el.style.display = "none";
+    }, 2200);
+  }
+
   const main = $("#main");
   const toc = $("#toc");
   if (!main || !toc) return;
@@ -134,7 +156,7 @@ window.WorkshopReadkit = function (cfg) {
       if (s.done["p" + i]) n++;
     });
     const wDone = $("#wDone");
-    if (wDone) wDone.textContent = n + " / " + N;
+    if (wDone) wDone.textContent = faNum(n) + " / " + faNum(N);
     $$("#toc a").forEach((a, i) => {
       a.classList.toggle("done", !!s.done["p" + i]);
     });
@@ -159,9 +181,9 @@ window.WorkshopReadkit = function (cfg) {
     save(s);
     pageEls.forEach((p, n) => p.classList.toggle("on", n === i));
     const pn = $("#pagerNum");
-    if (pn) pn.textContent = i + 1 + " / " + N;
+    if (pn) pn.textContent = faNum(i + 1) + " / " + faNum(N);
     const chip = $("#pageChip");
-    if (chip) chip.textContent = "صفحه " + (i + 1);
+    if (chip) chip.textContent = "صفحه " + faNum(i + 1);
     $$("#toc a").forEach((a, n) => a.classList.toggle("here", n === i));
     paint();
     window.scrollTo(0, 0);
@@ -173,6 +195,10 @@ window.WorkshopReadkit = function (cfg) {
       s.done[e.target.dataset.done] = e.target.checked;
       save(s);
       paint();
+      if (e.target.checked) {
+        const n = Object.keys(s.done).filter((k) => s.done[k]).length;
+        toast("خوانده شد — " + faNum(n) + " از " + faNum(N));
+      }
     }
   });
 
